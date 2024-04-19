@@ -1,0 +1,52 @@
+// Writing the airports pipeline
+
+// Took the example from cars.jv as a reference to implement this
+
+// Read the csv file from internet and save it to a sqlite database
+
+pipeline AirportsPipeline {
+    // First define blocks and connect one block to another
+
+    AirportsHttpExtractor
+        -> AirportsTextFileInterpreter
+        -> AirportsCSVFileInterpreter
+        -> AirportsTableInterpreter
+        -> AirportsLoader;
+
+    // Use the url provided in the document
+    block AirportsHttpExtractor oftype HttpExtractor {
+        url : "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
+    }
+
+    // Use text and csv in built interpreters
+    block AirportsTextFileInterpreter oftype TextFileInterpreter {}
+    block AirportsCSVFileInterpreter oftype CSVInterpreter {
+        delimiter: ";";
+    }
+
+    // Extract the table values
+    // look into the file and map the data types manually
+    block AirportsTableInterpreter oftype TableInterpreter{
+        header: true;
+        columns: [
+            "Lfd. Nummer" oftype integer,
+            "Name des Flughafens" oftype text,
+			"Ort" oftype text,
+			"Land" oftype text,
+			"IATA" oftype text,
+			"ICAO" oftype text,
+			"Latitude" oftype decimal,
+			"Longitude" oftype decimal,
+			"Altitude" oftype integer,
+			"Zeitzone" oftype decimal,
+            "DST" oftype text,
+			"Zeitzonen-Datenbank" oftype text,
+            "geo_punkt" oftype text
+        ];
+    }
+
+    block AirportsLoader oftype SQLiteLoader {
+        table : "airports";
+        file : "airports.sqlite";
+    }
+}
