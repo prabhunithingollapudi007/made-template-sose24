@@ -63,13 +63,13 @@ pipeline GoodsPipeline {
     block GoodsTableInterpreter oftype TableInterpreter {
         header: false;
         columns: [
-            "year" oftype text, 
+            "year" oftype PositiveValueType, 
             "month" oftype text, 
             "goods_id" oftype text, 
             "goods_name" oftype text, 
             "goods_source" oftype text, 
-            "abroad" oftype text, 
-            "total" oftype text, 
+            "abroad" oftype PositiveValueType, 
+            "total" oftype PositiveValueType, 
         ];
     }
 
@@ -79,3 +79,17 @@ pipeline GoodsPipeline {
         file: 'goodsTransportedByTrain.sqlite';
     }
 }
+
+valuetype PositiveValueType oftype integer {
+    constraints : [ PositiveValueConstraint ];
+}
+
+valuetype GermanMonthType oftype text {
+    constraints: [GermanMonthConstraint];
+}
+
+constraint PositiveValueConstraint on integer :
+    value >= 0;
+
+constraint GermanMonthConstraint on text:
+    value in ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
