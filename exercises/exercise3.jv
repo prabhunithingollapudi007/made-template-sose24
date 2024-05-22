@@ -63,13 +63,13 @@ pipeline GoodsPipeline {
     block GoodsTableInterpreter oftype TableInterpreter {
         header: false;
         columns: [
-            "year" oftype PositiveValueType, 
-            "month" oftype text, 
-            "goods_id" oftype text, 
+            "year" oftype text, 
+            "month" oftype GermanMonthType, 
+            "goods_id" oftype GoodsIdTypeValue, 
             "goods_name" oftype text, 
             "goods_source" oftype text, 
-            "abroad" oftype PositiveValueType, 
-            "total" oftype PositiveValueType, 
+            "abroad" oftype text, 
+            "total" oftype text, 
         ];
     }
 
@@ -88,8 +88,15 @@ valuetype GermanMonthType oftype text {
     constraints: [GermanMonthConstraint];
 }
 
+valuetype GoodsIdTypeValue oftype text {
+    constraints: [GoodsIdTypeConstraint];
+}
+
 constraint PositiveValueConstraint on integer :
     value >= 0;
+
+constraint GoodsIdTypeConstraint on text:
+    value matches /^NST7-[A-Z0-9]{3}$/;
 
 constraint GermanMonthConstraint on text:
     value in ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
