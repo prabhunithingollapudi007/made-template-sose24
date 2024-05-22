@@ -6,7 +6,7 @@ composite blocktype TextFileExtractor {
 
     block FileExtractor oftype HttpExtractor { url: url; }
 
-    block FileTextInterpreter oftype TextFileInterpreter {}
+    block FileTextInterpreter oftype TextFileInterpreter {encoding: "latin2";}
 
     inputName
         ->FileExtractor
@@ -63,13 +63,13 @@ pipeline GoodsPipeline {
     block GoodsTableInterpreter oftype TableInterpreter {
         header: false;
         columns: [
-            "year" oftype text, 
+            "year" oftype PositiveValueType, 
             "month" oftype GermanMonthType, 
             "goods_id" oftype GoodsIdTypeValue, 
             "goods_name" oftype text, 
             "goods_source" oftype text, 
-            "abroad" oftype text, 
-            "total" oftype text, 
+            "abroad" oftype PositiveValueType, 
+            "total" oftype PositiveValueType, 
         ];
     }
 
