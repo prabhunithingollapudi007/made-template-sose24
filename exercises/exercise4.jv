@@ -3,9 +3,8 @@
 pipeline TemperaturesPipeline {
     HttpExtractor -> ZipExtractor ->
     TemperatureFilePicker -> TextFileExtractor ->
-    CSVExtractor -> ColumnRenamer ->
-    TemperatureTableInterpreter -> 
-    TemperaturTransformer -> BatterietemperaturTransformer -> 
+    CSVExtractor -> FirstColumnRenamer -> SecondColumnRenamer -> ColumnDeleter ->
+    TemperatureTableInterpreter -> TemperaturTransformer -> BatterietemperaturTransformer -> 
     TemperatureLoader;
 
     block HttpExtractor oftype HttpExtractor {
@@ -29,10 +28,21 @@ pipeline TemperaturesPipeline {
         delimiter: ";";
     }
 
-    block ColumnRenamer oftype CellWriter {
-        at: range A1:F1;
-        write : ["id", "producer", "model", "month", "temperature", "battery_temperature"];
+    block FirstColumnRenamer oftype CellWriter {
+        at: range A1:E1;
+        write : ["id", "producer", "model", "month", "temperature"];
     }
+
+    block SecondColumnRenamer oftype CellWriter {
+        at: cell J1;
+        write : ["battery_temperature"];
+    }
+
+
+    block ColumnDeleter oftype ColumnDeleter {
+        delete : [column F, column G, column H, column I];
+    }
+
 
     block TemperatureTableInterpreter oftype TableInterpreter {
         header: false;
