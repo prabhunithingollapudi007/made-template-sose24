@@ -1,0 +1,59 @@
+pipeline GTFSPipeline {
+    GTFSSampleFeedExtractor  -> 
+    StopsFilePicker -> 
+    TextFileInterpreter ->
+    CSVInterpreter -> 
+    RowDeleter -> 
+    ColumnDeleter ->
+    TableInterpreter -> TableLoader;
+
+    block GTFSSampleFeedExtractor oftype GTFSExtractor  {
+        url : "https://gtfs.rhoenenergie-bus.de/GTFS.zip";
+    }
+
+
+    // pick stops file as mentioned in file
+    block StopsFilePicker oftype FilePicker {
+        path : "/stops.txt";
+    }
+
+    block TextFileInterpreter oftype TextFileInterpreter {
+    }
+
+    block CSVInterpreter oftype CSVInterpreter {
+        delimiter : ",";
+    }
+
+    block RowDeleter oftype RowDeleter {
+        delete : [row 1];
+    }
+
+    // deleting columns stop code and stop description
+    block ColumnDeleter oftype ColumnDeleter {
+        delete : [column B, column D];
+    }
+
+    block TableInterpreter oftype TableInterpreter {
+        header : false;
+        columns : [
+            "stop_id" oftype text,
+            "stop_name" oftype text,
+            "stop_lat" oftype text,
+            "stop_lon" oftype text,
+            "zone_id " oftype text,
+        ];
+    }
+
+    block TableLoader oftype SQLiteLoader {
+        table: 'stops';
+        file: './gtfs.sqlite'; 
+    }
+
+}
+
+valuetype PositiveValueType oftype integer {
+    constraints : [ PositiveValueConstraint ];
+}
+
+constraint PositiveValueConstraint on integer :
+    value >= 0;
