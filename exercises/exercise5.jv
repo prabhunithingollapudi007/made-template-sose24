@@ -45,8 +45,12 @@ valuetype ZoneValueType oftype integer {
     constraints : [ZoneidConstraintinteger];
 }
 
-constraint ZoneidConstraintinteger on integer :
-    value == 1645;
+constraint ZoneidConstraintinteger oftype RangeConstraint {
+   lowerBound: 1644;
+   lowerBoundInclusive: false;
+   upperBound: 1646;
+   upperBoundInclusive: false;
+ }
 
 valuetype GeographicType oftype decimal {
     constraints : [GeographicConstraint];
