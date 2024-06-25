@@ -67,9 +67,5 @@ constraint GeographicConstraint oftype RangeConstraint {
    upperBoundInclusive: true;
  }
 
-constraint ZoneidConstraintinteger oftype RangeConstraint {
-   lowerBound: 1644;
-   lowerBoundInclusive: false;
-   upperBound: 1646;
-   upperBoundInclusive: false;
- }
+constraint ZoneidConstraintinteger on integer :
+    value == 1645;
