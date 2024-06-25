@@ -52,7 +52,7 @@ pipeline GTFSPipeline {
 
 }
 
-valuetype ZoneValueType oftype decimal {
+valuetype ZoneValueType oftype integer {
     constraints : [ZoneidConstraintinteger];
 }
 
@@ -60,9 +60,6 @@ valuetype GeographicType oftype decimal {
     constraints : [GeographicConstraint];
 }
 
-constraint ZoneIdConstraint oftype AllowlistConstraint {
-   allowlist: ["1645"];
- }
 constraint GeographicConstraint oftype RangeConstraint {
    lowerBound: -90;
    lowerBoundInclusive: true;
