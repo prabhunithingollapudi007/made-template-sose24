@@ -37,7 +37,7 @@ pipeline GTFSPipeline {
     block TableInterpreter oftype TableInterpreter {
         header : false;
         columns : [
-            "stop_id" oftype decimal,
+            "stop_id" oftype integer,
             "stop_name" oftype text,
             "stop_lat" oftype GeographicType,
             "stop_lon" oftype GeographicType,
@@ -52,16 +52,13 @@ pipeline GTFSPipeline {
 
 }
 
-valuetype ZoneValueType oftype text {
-    constraints : [ZoneIdConstraint];
+valuetype ZoneValueType oftype integer {
+    constraints : [ZoneidConstraintinteger];
 }
 
 valuetype GeographicType oftype decimal {
     constraints : [GeographicConstraint];
 }
-
-constraint ZoneIdConstraintDecimal on decimal :
-    value == 1654;
 
 constraint ZoneIdConstraint oftype AllowlistConstraint {
    allowlist: ["1645"];
@@ -71,4 +68,11 @@ constraint GeographicConstraint oftype RangeConstraint {
    lowerBoundInclusive: true;
    upperBound: 90;
    upperBoundInclusive: true;
+ }
+
+constraint ZoneidConstraintinteger oftype RangeConstraint {
+   lowerBound: 1644;
+   lowerBoundInclusive: false;
+   upperBound: 1646;
+   upperBoundInclusive: false;
  }
