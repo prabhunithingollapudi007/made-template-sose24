@@ -2,9 +2,7 @@ pipeline GTFSPipeline {
     GTFSSampleFeedExtractor  -> 
     StopsFilePicker -> 
     TextFileInterpreter ->
-    CSVInterpreter -> 
-    RowDeleter -> 
-    ColumnDeleter ->
+    CSVInterpreter ->
     TableInterpreter -> TableLoader;
 
     block GTFSSampleFeedExtractor oftype GTFSExtractor  {
@@ -25,17 +23,8 @@ pipeline GTFSPipeline {
         enclosing: '"';
     }
 
-    block RowDeleter oftype RowDeleter {
-        delete : [row 1];
-    }
-
-    // deleting columns stop code and stop description
-    block ColumnDeleter oftype ColumnDeleter {
-        delete : [column B, column D];
-    }
-
     block TableInterpreter oftype TableInterpreter {
-        header : false;
+        header : true;
         columns : [
             "stop_id" oftype integer,
             "stop_name" oftype text,
@@ -56,6 +45,9 @@ valuetype ZoneValueType oftype integer {
     constraints : [ZoneidConstraintinteger];
 }
 
+constraint ZoneidConstraintinteger on integer :
+    value == 1645;
+
 valuetype GeographicType oftype decimal {
     constraints : [GeographicConstraint];
 }
@@ -66,6 +58,3 @@ constraint GeographicConstraint oftype RangeConstraint {
    upperBound: 90;
    upperBoundInclusive: true;
  }
-
-constraint ZoneidConstraintinteger on integer :
-    value == 1645;
