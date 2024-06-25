@@ -52,7 +52,7 @@ pipeline GTFSPipeline {
 
 }
 
-valuetype ZoneValueType oftype integer {
+valuetype ZoneValueType oftype decimal {
     constraints : [ZoneidConstraintinteger];
 }
 
