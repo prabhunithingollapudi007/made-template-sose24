@@ -41,7 +41,7 @@ pipeline GTFSPipeline {
             "stop_name" oftype text,
             "stop_lat" oftype GeographicType,
             "stop_lon" oftype GeographicType,
-            "zone_id " oftype ZoneValueType,
+            "zone_id " oftype integer,
         ];
     }
 
