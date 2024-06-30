@@ -5,19 +5,6 @@ import os
 import pandas as pd
 import sqlite3
 
-# information about the data
-
-
-first_url = 'https://www.data.gouv.fr/fr/datasets/r/2729b192-40ab-4454-904d-735084dca3a3'
-second_url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-carburants-quotidien/exports/csv'
-
-ev_infra_file = 'ev-infra'
-fuel_prices_file = 'fuel-prices'
-
-data_file_type = '.csv'
-database_type = '.sqlite'
-
-data_path = 'data'
 
 def download_data(url, data_path, file_name):
     print('Downloading data from: {}'.format(url) + ' to file: {}'.format(file_name))
@@ -41,7 +28,7 @@ def save_to_sqlite(data, file_name):
     conn.close()
     print('Data saved to sqllite file: {}'.format(file_name))
 
-def data_pipeline():
+def data_pipeline(first_url, second_url, ev_infra_file, fuel_prices_file, data_file_type, database_type, data_path):
 
     # run the pipeline for first and second data respectively
 
@@ -54,4 +41,16 @@ def data_pipeline():
     save_to_sqlite(fuel_prices_data, os.path.join(data_path, fuel_prices_file + database_type))
 
 if __name__ == '__main__':
-    data_pipeline()
+    # information about the data
+    first_url = 'https://www.data.gouv.fr/fr/datasets/r/2729b192-40ab-4454-904d-735084dca3a3'
+    second_url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-carburants-quotidien/exports/csv'
+
+    ev_infra_file = 'ev-infra'
+    fuel_prices_file = 'fuel-prices'
+
+    data_file_type = '.csv'
+    database_type = '.sqlite'
+
+    data_path = 'data'
+
+    data_pipeline(first_url=first_url, second_url=second_url, ev_infra_file=ev_infra_file, fuel_prices_file=fuel_prices_file, data_file_type=data_file_type, database_type=database_type, data_path=data_path)
