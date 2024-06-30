@@ -32,8 +32,5 @@ jobs:
       # Run tests
       - name: Run tests
         run: |
-          ls -la main/project
-          cd main/project
-          ls -la
-          pwd
-          ./tests.sh
+          cd main
+          ./project/tests.sh
