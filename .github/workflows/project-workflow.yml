@@ -24,10 +24,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           ls -la
-          ls -la ./project
-          python -m pip install -r ./project/requirements.txt
+          ls -la main
+          python -m pip install -r main/project/requirements.txt
 
       # Run tests
       - name: Run tests
         run: |
-          ./project/tests.sh
+          main/project/tests.sh
