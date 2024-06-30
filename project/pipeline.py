@@ -5,53 +5,53 @@ import os
 import pandas as pd
 import sqlite3
 
-data_path = 'data'
+# information about the data
 
-# create a directory to store the data
-os.makedirs(data_path, exist_ok=True)
 
-# download the data
 first_url = 'https://www.data.gouv.fr/fr/datasets/r/2729b192-40ab-4454-904d-735084dca3a3'
 second_url = 'https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-carburants-quotidien/exports/csv'
 
-file_type = '.csv'
-db_type = '.sqlite'
-first_file = 'ev-infra' + file_type
-second_file = 'fuel-prices' + file_type
+ev_infra_file = 'ev-infra'
+fuel_prices_file = 'fuel-prices'
 
-print('Downloading data...')
+data_file_type = '.csv'
+database_type = '.sqlite'
 
-# download the first file
-response = requests.get(first_url)
-with open(os.path.join(data_path, first_file), 'wb') as f:
-    f.write(response.content)
+data_path = 'data'
 
-# download the second file
-response = requests.get(second_url)
-with open(os.path.join(data_path, second_file), 'wb') as f:
-    f.write(response.content)
+def download_data(url, data_path, file_name):
+    print('Downloading data from: {}'.format(url) + ' to file: {}'.format(file_name))
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
+        print('Directory created: {}'.format(data_path))
+    response = requests.get(url)
+    with open(os.path.join(data_path, file_name), 'wb') as f:
+        f.write(response.content)
+    print('Data downloaded successfully to file: {}'.format(file_name) + ' in directory: {}'.format(data_path))
 
-print('Data downloaded and saved successfully to directory: {}'.format(data_path))
+
+def read_csv_file(file_path, sep=','):
+    print('Reading data from file: {}'.format(file_path))
+    return pd.read_csv(file_path, sep=sep)
 
 
-# save the csv files to sqlite database
-print('Saving data to sqlite database...')
+def save_to_sqlite(data, file_name):
+    conn = sqlite3.connect(file_name)
+    data.to_sql('data', conn, if_exists='replace', index=False)
+    conn.close()
+    print('Data saved to sqllite file: {}'.format(file_name))
 
-# load the data
-data1 = pd.read_csv(os.path.join(data_path, first_file), sep=',')
-data2 = pd.read_csv(os.path.join(data_path, second_file), sep=';')
+def data_pipeline():
 
-# create a connection to the database for data1 and save it
-first_file = 'ev-infra' + db_type
-second_file = 'fuel-prices' + db_type
+    # run the pipeline for first and second data respectively
 
-conn1 = sqlite3.connect(os.path.join(data_path, first_file))
-data1.to_sql('data1', conn1, if_exists='replace', index=False)
-conn1.close()
+    download_data(first_url, data_path, ev_infra_file + data_file_type)
+    ev_infra_data = read_csv_file(os.path.join(data_path, ev_infra_file + data_file_type))
+    save_to_sqlite(ev_infra_data, os.path.join(data_path, ev_infra_file + database_type))
 
-# create a connection to the database for data2 and save it
-conn2 = sqlite3.connect(os.path.join(data_path, second_file))
-data2.to_sql('data2', conn2, if_exists='replace', index=False)
-conn2.close()
+    download_data(second_url, data_path, fuel_prices_file + data_file_type)
+    fuel_prices_data = read_csv_file(os.path.join(data_path, fuel_prices_file + data_file_type), sep=';')
+    save_to_sqlite(fuel_prices_data, os.path.join(data_path, fuel_prices_file + database_type))
 
-print('Data saved to sqlite database successfully')
+if __name__ == '__main__':
+    data_pipeline()
