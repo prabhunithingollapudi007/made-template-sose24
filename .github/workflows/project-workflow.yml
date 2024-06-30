@@ -25,6 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r main/project/requirements.txt
 
+      # Add execution permissions to the tests script
+      - name: Grant execute permission for the tests script
+        run: chmod +x main/project/tests.sh
+
       # Run tests
       - name: Run tests
         run: |
