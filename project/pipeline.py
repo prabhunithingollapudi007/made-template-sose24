@@ -29,9 +29,21 @@ def rename_columns(data, columns):
     print('Renaming columns: {}'.format(columns))
     return data.rename(columns=columns)
 
-def save_to_sqlite(data, file_name):
+def drop_na(data):
+    print('Dropping NA values')
+    return data.dropna()
+
+def convert_to_datetime(data, columns):
+    for column in columns:
+        print('Converting column: {} to datetime'.format(column))
+        # trim the date to the first 10 characters to format dd-mm-yy
+        data[column] = data[column].str[:10]
+        data[column] = pd.to_datetime(data[column], format='%Y-%m-%d')
+    return data
+
+def save_to_sqlite(data, file_name, table_name='data'):
     conn = sqlite3.connect(file_name)
-    data.to_sql('data', conn, if_exists='replace', index=False)
+    data.to_sql(table_name, conn, if_exists='replace', index=False)
     conn.close()
     print('Data saved to sqllite file: {}'.format(file_name))
 
@@ -44,14 +56,18 @@ def data_pipeline(first_url, second_url, ev_infra_file, fuel_prices_file, data_f
     ev_infra_data = select_columns(ev_infra_data, ['nom_station', 'id_pdc_itinerance', 'date_mise_en_service', 'date_maj', 'last_modified', 'created_at'])
     ev_column_map = {'nom_station': 'station_name', 'id_pdc_itinerance': 'station_id', 'date_mise_en_service': 'station_service_start_date', 'date_maj': 'date_modified'}
     ev_infra_data = rename_columns(ev_infra_data, ev_column_map)
-    save_to_sqlite(ev_infra_data, os.path.join(data_path, ev_infra_file + database_type))
+    ev_infra_data = drop_na(ev_infra_data)
+    ev_infra_data = convert_to_datetime(ev_infra_data, ['station_service_start_date', 'date_modified', 'last_modified', 'created_at'])
+    save_to_sqlite(ev_infra_data, os.path.join(data_path, ev_infra_file + database_type), table_name='ev')
 
     download_data(second_url, data_path, fuel_prices_file + data_file_type)
     fuel_prices_data = read_csv_file(os.path.join(data_path, fuel_prices_file + data_file_type), sep=';')
     fuel_prices_data = select_columns(fuel_prices_data, ['prix_maj', 'prix_id', 'prix_valeur', 'prix_nom'])
     fuel_column_map = {'prix_maj': 'date_modified', 'prix_id': 'price_id', 'prix_valeur': 'price_value', 'prix_nom': 'price_name'}
     fuel_prices_data = rename_columns(fuel_prices_data, fuel_column_map)
-    save_to_sqlite(fuel_prices_data, os.path.join(data_path, fuel_prices_file + database_type))
+    fuel_prices_data = drop_na(fuel_prices_data)
+    fuel_prices_data = convert_to_datetime(fuel_prices_data, ['date_modified'])
+    save_to_sqlite(fuel_prices_data, os.path.join(data_path, fuel_prices_file + database_type), table_name='fuel')
 
 if __name__ == '__main__':
     # information about the data
