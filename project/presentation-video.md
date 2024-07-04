@@ -1,0 +1,1 @@
+https://faubox.rrze.uni-erlangen.de/getlink/fiK6kiYXQofF7F3kuRoMcR/Charging%20Infrastructures%20for%20EVs%20and%20Fuel%20prices.mp4
